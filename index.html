@@ -1,366 +1,123 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spanish Learning Platform: Hard Mode & Practice</title>
-
-    <!-- PWA Manifest & Mobile App Styling -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4A90E2">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Español">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/197/197593.png">
-
-    <!-- Register Service Worker -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js');
-        });
-      }
-    </script>
-
+    <title>Curso de Español: Interactive AI Lab</title>
     <style>
         :root {
-            --primary: #4A90E2;
-            --primary-dark: #357ABD;
-            --success: #2ECC71;
-            --error: #E74C3C;
-            --background: #F4F7F6;
-            --card: #FFFFFF;
-            --text: #2C3E50;
-            --text-light: #7F8C8D;
-            --border-radius: 12px;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
         }
 
         body {
-            background-color: var(--background);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
 
-        /* Navigation Bar */
-        nav.app-nav {
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .nav-header {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            width: 100%;
-            max-width: 750px;
         }
 
         .nav-btn {
             flex: 1;
             padding: 12px;
             border: none;
-            background-color: #E2E8F0;
-            color: var(--text);
-            font-size: 1rem;
-            font-weight: 600;
             border-radius: 8px;
+            background: #e5e7eb;
+            color: var(--text-color);
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .nav-btn.active {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 750px;
-            background: var(--card);
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-
-        /* Quiz UI Elements */
-        .controls-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        select, input[type="text"] {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 2px solid #E0E0E0;
-            outline: none;
-            font-size: 0.95rem;
-            color: var(--text);
-            background-color: #fff;
-            transition: border-color 0.2s;
-        }
-
-        select:focus, input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .stat-box {
-            background: #F0F4F8;
-            padding: 6px 12px;
-            border-radius: 6px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 10px;
-            background-color: #E0E0E0;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .question-card {
-            margin-bottom: 25px;
-        }
-
-        .question-tag {
-            display: inline-block;
-            background: #EBF3FA;
-            color: var(--primary-dark);
-            font-size: 0.8rem;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .question-text {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        textarea.user-input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #EAEAEA;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            outline: none;
-            transition: border-color 0.2s;
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        textarea.user-input:focus {
-            border-color: var(--primary);
-        }
-
-        textarea.user-input.correct {
-            background-color: #E8F8F0;
-            border-color: var(--success);
-            color: #1E7E34;
-            font-weight: 600;
-        }
-
-        textarea.user-input.incorrect {
-            background-color: #FCEAE9;
-            border-color: var(--error);
-            color: #A94442;
-        }
-
-        .submit-btn, .action-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
-        }
-
-        .submit-btn:hover, .action-btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .explanation {
-            margin-top: 15px;
-            padding: 14px 16px;
-            border-radius: 8px;
-            background-color: #F8F9FA;
-            border-left: 4px solid var(--primary);
-            font-size: 0.95rem;
-            display: none;
-            line-height: 1.5;
-        }
-
-        .footer-nav {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .next-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: none;
-        }
-
-        /* Practice Section Elements */
-        .practice-menu {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .practice-opt-btn {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #E0E0E0;
-            background: #fff;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-
-        .practice-opt-btn.active {
-            border-color: var(--primary);
-            background-color: #EBF3FA;
-            color: var(--primary-dark);
-        }
-
-        .api-key-panel {
-            background: #FFF8E7;
-            border: 1px solid #FFE0B2;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-        }
-
-        .api-key-panel input {
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        .chat-box {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 350px;
-            overflow-y: auto;
-            padding: 10px;
-            background: #F8F9FA;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #EAEAEA;
-        }
-
-        .message {
-            padding: 10px 14px;
-            border-radius: 10px;
-            max-width: 80%;
-            line-height: 1.4;
-            font-size: 0.95rem;
-        }
-
-        .message.ai {
-            background: #EBF3FA;
-            color: var(--text);
-            align-self: flex-start;
-        }
-
-        .message.user {
             background: var(--primary);
             color: white;
-            align-self: flex-end;
         }
 
-        .message.feedback {
-            background: #FFF3CD;
-            border-left: 4px solid #FFC107;
-            color: #856404;
-            align-self: stretch;
-            font-size: 0.85rem;
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
-        .voice-controls {
+        .api-key-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="password"], input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .sub-nav {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
-        .mic-btn {
-            background-color: #E74C3C;
+        .sub-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sub-btn.active {
+            background: #eff6ff;
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .btn {
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            margin-top: 10px;
         }
 
-        .mic-btn.recording {
-            animation: pulse 1s infinite;
-        }
+        .btn:hover { background: var(--primary-dark); }
+        .btn-mic { background: #dc2626; }
+        .btn-mic.listening { animation: pulse 1.5s infinite; }
 
         @keyframes pulse {
             0% { opacity: 1; }
@@ -368,536 +125,410 @@
             100% { opacity: 1; }
         }
 
-        /* Side-by-side Reader */
-        .reader-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-
-        .reader-col {
-            background: #F8F9FA;
+        /* Feedback Display Formatting */
+        .feedback-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
             padding: 15px;
-            border-radius: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .reader-header {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-        }
-
-        .results-screen {
-            text-align: center;
-            padding: 20px 0;
-            display: none;
-        }
-
-        .score-circle {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 20px auto;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
-        }
-
-        .restart-btn {
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
             margin-top: 15px;
+            border-radius: 4px;
         }
 
-        canvas#confetti {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
+
+        .metric-card {
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric-val { font-size: 18px; font-weight: bold; color: var(--primary); }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; }
+        .msg.assistant { background: #e5e7eb; color: var(--text-color); align-self: flex-start; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; }
+        th { background: #f9fafb; }
     </style>
 </head>
 <body>
 
-<nav class="app-nav">
-    <button class="nav-btn active" id="nav-quiz" onclick="switchMainTab('quiz')">Assessment Quiz</button>
-    <button class="nav-btn" id="nav-practice" onclick="switchMainTab('practice')">AI Practice Lab</button>
-</nav>
-
 <div class="container">
-    <canvas id="confetti"></canvas>
-    
-    <!-- MAIN QUIZ SECTION -->
-    <div id="section-quiz">
-        <header>
-            <h1>Curso de Español: Hard Mode</h1>
-            <p class="subtitle">Full-Sentence Active Recall & Translation Assessment</p>
-        </header>
-
-        <div class="controls-panel">
-            <select id="lesson-select" onchange="filterQuestions()">
-                <option value="all">All Lessons (Level 1 & 2)</option>
-                <optgroup label="Level 1">
-                    <option value="L1_11">L1 Lesson 11: Big/Small & Knowing</option>
-                    <option value="L1_12">L1 Lesson 12: Locations & States</option>
-                    <option value="L1_13">L1 Lesson 13: Being, Busy & Tired</option>
-                    <option value="L1_14">L1 Lesson 14: Demonstratives & Leaving</option>
-                    <option value="L1_15">L1 Lesson 15: Meals & Certainty</option>
-                    <option value="L1_16">L1 Lesson 16: Having, Doing & Items</option>
-                    <option value="L1_17">L1 Lesson 17: Verbs & Subject Pronouns</option>
-                    <option value="L1_18">L1 Lesson 18: Conjugations & Need</option>
-                    <option value="L1_19">L1 Lesson 19: Present Tense & Ser/Estar</option>
-                    <option value="L1_20">L1 Lesson 20: Nationalities & Object Pronouns</option>
-                </optgroup>
-                <optgroup label="Level 2">
-                    <option value="L2_12">L2 Lesson 12: Commands & Adverbs</option>
-                    <option value="L2_13">L2 Lesson 13: Days & Well/Very Well</option>
-                    <option value="L2_14">L2 Lesson 14: Demonstratives & Nouns</option>
-                    <option value="L2_15">L2 Lesson 15: "We" Forms & Prepositions</option>
-                    <option value="L2_16">L2 Lesson 16: Numbers, Rooms & Greetings</option>
-                    <option value="L2_17">L2 Lesson 17: Giving & Indirect Pronouns</option>
-                    <option value="L2_18">L2 Lesson 18: Formal Address & Thinking/Starting</option>
-                    <option value="L2_19">L2 Lesson 19: Liking & Types</option>
-                    <option value="L2_20">L2 Lesson 20: Ability, Returning & Reflexives</option>
-                </optgroup>
-            </select>
-
-            <div class="stats">
-                <div class="stat-box">Streak: 🔥 <span id="streak-count">0</span></div>
-                <div class="stat-box">Score: ⭐ <span id="score-count">0</span></div>
-            </div>
-        </div>
-
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
-
-        <div id="quiz-body">
-            <div class="question-card">
-                <span class="question-tag" id="lesson-tag">Level 1 - Lesson 11</span>
-                <div class="question-text" id="question-text">Loading prompt...</div>
-                
-                <div class="input-container">
-                    <textarea id="user-answer" class="user-input" placeholder="Type the full Spanish translation here..." autocomplete="off"></textarea>
-                    <button id="submit-btn" class="submit-btn" onclick="checkAnswer()">Submit Translation</button>
-                </div>
-
-                <div class="explanation" id="explanation"></div>
-            </div>
-
-            <div class="footer-nav">
-                <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Sentence ➔</button>
-            </div>
-        </div>
-
-        <div class="results-screen" id="results-screen">
-            <h2>Assessment Completed! 🎉</h2>
-            <p>Your Final Result:</p>
-            <div class="score-circle" id="final-score">0%</div>
-            <p id="results-feedback">Great effort! Keep practicing.</p>
-            <button class="restart-btn" onclick="restartQuiz()">Try Again 🔄</button>
-        </div>
+    <div class="card api-key-box">
+        <label><strong>Gemini API Key:</strong> (Required for live AI responses)</label>
+        <input type="password" id="apiKeyInput" placeholder="AIzaSy..." onchange="saveApiKey()">
     </div>
 
-    <!-- AI PRACTICE SECTION -->
-    <div id="section-practice" style="display: none;">
-        <header>
-            <h1>AI Practice Lab</h1>
-            <p class="subtitle">Interactive Sentence Correction, Voice Chat & Article Reader</p>
-        </header>
+    <div class="card">
+        <h2 style="text-align: center; color: var(--primary); margin-top: 0;">AI Spanish Learning Lab</h2>
+        <p style="text-align: center; color: #6b7280; font-size: 14px;">Interactive Sentence Correction, Voice Chat & Article Reader</p>
 
-        <div class="api-key-panel">
-            <label for="api-key-input"><strong>OpenAI API Key:</strong> (Required for live AI responses)</label>
-            <input type="password" id="api-key-input" placeholder="sk-..." onchange="saveApiKey()" />
+        <div class="sub-nav">
+            <button class="sub-btn active" onclick="switchLab('corrector')">1. Sentence Corrector</button>
+            <button class="sub-btn" onclick="switchLab('chat')">2. Talk to AI Agent</button>
+            <button class="sub-btn" onclick="switchLab('reader')">3. Read with AI</button>
+            <button class="sub-btn" onclick="switchLab('grammar')">4. Grammar Practice</button>
         </div>
 
-        <div class="practice-menu">
-            <button class="practice-opt-btn active" id="pbtn-corrector" onclick="switchPracticeMode('corrector')">1. Sentence Corrector</button>
-            <button class="practice-opt-btn" id="pbtn-agent" onclick="switchPracticeMode('agent')">2. Talk to AI Agent</button>
-            <button class="practice-opt-btn" id="pbtn-reader" onclick="switchPracticeMode('reader')">3. Read with AI</button>
+        <!-- 1. SENTENCE CORRECTOR MODULE -->
+        <div id="lab-corrector" class="tab-content active">
+            <p>Type a sentence in Spanish below. The AI will correct your sentence, evaluate your level, and suggest better alternatives.</p>
+            <textarea id="correctorInput" rows="3" placeholder="e.g., Yo tengo un perro bonito y me gusta caminar con él."></textarea>
+            <button class="btn" onclick="runSentenceCorrector()">Analyze Sentence</button>
+
+            <div id="correctorOutput" style="display:none;" class="feedback-box">
+                <h4>Analysis & Corrections:</h4>
+                <p><strong>Original:</strong> <span id="corrOrig"></span></p>
+                <p><strong>Correction:</strong> <span id="corrFixed" style="color: var(--accent-green); font-weight: bold;"></span></p>
+                <p><strong>English Translation:</strong> <span id="corrTrans"></span></p>
+                <p><strong>Grammar Explanation:</strong> <span id="corrNotes"></span></p>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card"><div>Grammar</div><div class="metric-val" id="scoreGrammar">-</div></div>
+                    <div class="metric-card"><div>Vocabulary</div><div class="metric-val" id="scoreVocab">-</div></div>
+                    <div class="metric-card"><div>Complexity</div><div class="metric-val" id="scoreComplexity">-</div></div>
+                </div>
+            </div>
         </div>
 
-        <!-- Mode 1: Sentence Corrector -->
-        <div id="pmode-corrector">
-            <div class="chat-box" id="corrector-chat"></div>
+        <!-- 2. AI VOICE & TEXT CHAT MODULE -->
+        <div id="lab-chat" class="tab-content">
+            <div class="chat-box" id="chatWindow">
+                <div class="msg assistant">¡Hola! ¿De qué te gustaría hablar hoy?</div>
+            </div>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="corrector-input" style="flex: 1;" placeholder="Type your response in Spanish..." onkeydown="if(event.key==='Enter') sendCorrectorResponse()"/>
-                <button class="submit-btn" style="width: auto;" onclick="sendCorrectorResponse()">Send</button>
+                <input type="text" id="chatInput" placeholder="Type your response in Spanish..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button class="btn" onclick="sendChatMessage()">Send</button>
+                <button class="btn btn-mic" id="micBtn" onclick="toggleVoiceInput()">🎤 Speak</button>
+            </div>
+            <div id="chatFeedback" class="feedback-box" style="display:none; margin-top: 10px;">
+                <strong>Real-time Grammar Feedback:</strong>
+                <div id="chatFeedbackText"></div>
             </div>
         </div>
 
-        <!-- Mode 2: Talk to AI Agent -->
-        <div id="pmode-agent" style="display: none;">
-            <div class="chat-box" id="agent-chat"></div>
-            <div class="voice-controls">
-                <button class="mic-btn" id="mic-btn" onclick="toggleSpeechRecognition()">🎤 Hold/Click to Speak</button>
-                <span id="speech-status" style="font-size: 0.85rem; color: var(--text-light);">Click to start listening...</span>
+        <!-- 3. READ WITH AI MODULE -->
+        <div id="lab-reader" class="tab-content">
+            <p>Generate a customized Spanish reading story tailored to your current learning level.</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <select id="readerTopic">
+                    <option value="daily routine">Daily Routine</option>
+                    <option value="travel and airport">Travel & Airport</option>
+                    <option value="ordering food at a restaurant">Ordering Food</option>
+                </select>
+                <button class="btn" onclick="generateArticle()">Generate Story</button>
+            </div>
+            <div id="readerOutput" style="display:none;">
+                <div class="card" style="background: #f8fafc;" id="readerSpanishText"></div>
+                <div class="card" style="background: #f1f5f9;" id="readerEnglishText"></div>
+                <h4>Key Vocabulary Breakdown:</h4>
+                <table id="vocabTable">
+                    <thead><tr><th>Spanish Word</th><th>English Translation</th></tr></thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Mode 3: Read with AI -->
-        <div id="pmode-reader" style="display: none;">
-            <button class="action-btn" style="margin-bottom: 15px;" onclick="loadNewsArticle()">Fetch Latest News Article 📰</button>
-            <button class="action-btn" style="background-color: var(--success); margin-bottom: 15px;" onclick="readArticleOutLoud()">🔊 Read Article Out Loud</button>
-            
-            <div class="reader-grid">
-                <div class="reader-col">
-                    <div class="reader-header">Español</div>
-                    <div id="reader-es">Click button above to load an article...</div>
-                </div>
-                <div class="reader-col">
-                    <div class="reader-header">English</div>
-                    <div id="reader-en">El artículo traducido aparecerá aquí...</div>
-                </div>
+        <!-- 4. TARGETED GRAMMAR PRACTICE MODULE -->
+        <div id="lab-grammar" class="tab-content">
+            <h3>Targeted Rules Practice</h3>
+            <p>Practice common tricky areas like <strong>Por vs. Para</strong> or gendered articles.</p>
+            <button class="btn" onclick="generateGrammarQuestion()">Get New Exercise</button>
+            <div id="grammarCard" class="feedback-box" style="display:none; margin-top: 15px;">
+                <p id="grammarQuestion" style="font-size: 16px; font-weight: bold;"></p>
+                <div id="grammarOptions" style="display: flex; gap: 10px; margin-top: 10px;"></div>
+                <p id="grammarResult" style="margin-top: 10px; font-weight: bold;"></p>
             </div>
         </div>
+
     </div>
 </div>
 
 <script>
-// --- QUIZ DATA & STATE ---
-const rawQuestions = [
-    { level: 1, lesson: 11, prompt: "Translate into Spanish: \"Do you know why I don't have it?\"", answers: ["¿Sabes por qué no lo tengo?", "Sabes por que no lo tengo?", "Sabes por que no lo tengo", "Sabes porque no lo tengo"], exp: "Lesson 11 pattern: '¿Sabes por qué no lo tengo?'" },
-    { level: 1, lesson: 11, prompt: "Translate into Spanish: \"I don't know where your phone is, but I know where your computer is.\"", answers: ["No sé dónde está tu teléfono, pero sé dónde está tu ordenador.", "No sé dónde está tu teléfono, pero sé dónde está tu computadora.", "No se donde esta tu telefono pero se donde esta tu ordenador", "No se donde esta tu telefono pero se donde esta tu computadora"], exp: "Lesson 11 standard phrasing." },
-    { level: 1, lesson: 12, prompt: "Translate into Spanish: \"Can I know where you are now?\"", answers: ["¿Puedo saber dónde estás ahora?", "Puedo saber donde estas ahora?", "Puedo saber donde estas ahora"], exp: "'Puedo saber dónde estás ahora?'" },
-    { level: 2, lesson: 12, prompt: "Translate into Spanish: \"Call me tomorrow!\"", answers: ["¡Llámame mañana!", "Llamame mañana!", "Llamame mañana"], exp: "Informal imperative: 'Llámame'." },
-    { level: 2, lesson: 13, prompt: "Translate into Spanish: \"He speaks Spanish very well.\"", answers: ["Él habla español muy bien.", "El habla espanol muy bien", "Habla español muy bien."], exp: "'Muy bien' = very well." }
-];
-
-let currentQuestions = [];
-let currentIndex = 0;
-let score = 0;
-let streak = 0;
-let audioCtx = null;
-
-// --- NAVIGATION BETWEEN TABS ---
-function switchMainTab(tab) {
-    document.getElementById('nav-quiz').classList.toggle('active', tab === 'quiz');
-    document.getElementById('nav-practice').classList.toggle('active', tab === 'practice');
-    document.getElementById('section-quiz').style.display = tab === 'quiz' ? 'block' : 'none';
-    document.getElementById('section-practice').style.display = tab === 'practice' ? 'block' : 'none';
-}
-
-function switchPracticeMode(mode) {
-    document.getElementById('pbtn-corrector').classList.toggle('active', mode === 'corrector');
-    document.getElementById('pbtn-agent').classList.toggle('active', mode === 'agent');
-    document.getElementById('pbtn-reader').classList.toggle('active', mode === 'reader');
-
-    document.getElementById('pmode-corrector').style.display = mode === 'corrector' ? 'block' : 'none';
-    document.getElementById('pmode-agent').style.display = mode === 'agent' ? 'block' : 'none';
-    document.getElementById('pmode-reader').style.display = mode === 'reader' ? 'block' : 'none';
-
-    if (mode === 'corrector' && document.getElementById('corrector-chat').children.length === 0) {
-        initCorrectorMode();
-    } else if (mode === 'agent' && document.getElementById('agent-chat').children.length === 0) {
-        initAgentMode();
+    // Local Storage API Key handling
+    function saveApiKey() {
+        localStorage.setItem('gemini_api_key', document.getElementById('apiKeyInput').value.trim());
     }
-}
+    function getApiKey() {
+        return localStorage.getItem('gemini_api_key') || document.getElementById('apiKeyInput').value.trim();
+    }
+    window.onload = () => {
+        const key = getApiKey();
+        if (key) document.getElementById('apiKeyInput').value = key;
+    };
 
-// --- API & OPENAI HELPERS ---
-function saveApiKey() {
-    const key = document.getElementById('api-key-input').value;
-    localStorage.setItem('openai_api_key', key);
-}
+    // Sub-Navigation Tab Switching
+    function switchLab(tabName) {
+        document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(`lab-${tabName}`).classList.add('active');
+    }
 
-function getApiKey() {
-    return document.getElementById('api-key-input').value || localStorage.getItem('openai_api_key') || '';
-}
-    
-async function callOpenAI(messages) {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-        alert("Please enter your Gemini API key in the box above.");
+    // Core API Call Function with Retries
+    async function callGeminiAPI(systemInstruction, userPrompt) {
+        const apiKey = getApiKey();
+        if (!apiKey) {
+            alert("Please enter your Gemini API key in the field above.");
+            return null;
+        }
+
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+            systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
+        };
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.status === 503 || response.status === 429) {
+                    console.warn(`Server busy (${response.status}). Retrying...`);
+                    await new Promise(resolve => setTimeout(resolve, attempt * 1500));
+                    continue;
+                }
+
+                if (!response.ok) {
+                    console.error("Gemini API Error:", data);
+                    return null;
+                }
+
+                return data.candidates[0]?.content?.parts[0]?.text || null;
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        }
         return null;
     }
 
-    const systemPrompt = messages.find(m => m.role === 'system')?.content || '';
-    const contents = messages
-        .filter(m => m.role !== 'system')
-        .map(m => ({
-            role: m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: m.content }]
-        }));
+    // 1. SENTENCE CORRECTOR LOGIC
+    async function runSentenceCorrector() {
+        const text = document.getElementById('correctorInput').value.trim();
+        if (!text) return;
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
-    const payload = {
-        contents: contents,
-        systemInstruction: systemPrompt ? { parts: [{ text: systemPrompt }] } : undefined
-    };
+        const systemPrompt = `You are an expert Spanish teacher. Analyze the provided Spanish sentence and respond ONLY with valid JSON in this exact structure:
+        {
+          "correction": "corrected sentence",
+          "translation": "English translation",
+          "explanation": "concise grammar explanation",
+          "grammar_score": "A1/A2/B1/B2",
+          "vocab_score": "Basic/Intermediate/Advanced",
+          "complexity": "Low/Medium/High"
+        }`;
 
-    // Retry up to 3 times if Google returns a 503 (Overloaded)
-    for (let attempt = 1; attempt <= 3; attempt++) {
+        const rawRes = await callGeminiAPI(systemPrompt, text);
+        if (!rawRes) return;
+
         try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const cleanJson = rawRes.replace(/```json|```/g, '').trim();
+            const res = JSON.parse(cleanJson);
 
-            const data = await response.json();
-
-            if (response.status === 503 || response.status === 429) {
-                console.warn(`Server busy (${response.status}). Retrying attempt ${attempt}...`);
-                await new Promise(resolve => setTimeout(resolve, attempt * 1500)); // Pause before retry
-                continue;
-            }
-
-            if (!response.ok) {
-                console.error("Gemini Error Details:", data);
-                alert(`Gemini API Error (${response.status}): ${data.error?.message || 'Check browser console.'}`);
-                return null;
-            }
-
-            return data.candidates[0].content.parts[0].text;
-        } catch (err) {
-            console.error("Fetch error:", err);
+            document.getElementById('corrOrig').innerText = text;
+            document.getElementById('corrFixed').innerText = res.correction;
+            document.getElementById('corrTrans').innerText = res.translation;
+            document.getElementById('corrNotes').innerText = res.explanation;
+            document.getElementById('scoreGrammar').innerText = res.grammar_score;
+            document.getElementById('scoreVocab').innerText = res.vocab_score;
+            document.getElementById('scoreComplexity').innerText = res.complexity;
+            
+            document.getElementById('correctorOutput').style.display = 'block';
+        } catch (e) {
+            console.error("Failed to parse JSON response", e);
         }
     }
 
-    alert("Google API servers are currently overloaded. Please wait a few seconds and try again.");
-    return null;
-}
+    // 2. CHAT & VOICE LOGIC
+    let chatHistory = [];
+    async function sendChatMessage(customText = null) {
+        const inputField = document.getElementById('chatInput');
+        const userMsg = customText || inputField.value.trim();
+        if (!userMsg) return;
 
+        appendMsg('user', userMsg);
+        if (!customText) inputField.value = '';
 
-// --- PRACTICE MODE 1: SENTENCE CORRECTOR ---
-let correctorHistory = [];
+        const systemPrompt = `You are a supportive Spanish conversational agent for a beginner learner. 
+        Respond in conversational Spanish (keep it clear and beginner-friendly). 
+        At the end of your response, if the user made any grammatical errors, add a separate section starting with "FEEDBACK:" explaining the fix in English.`;
 
-async function initCorrectorMode() {
-    correctorHistory = [
-        { role: 'system', content: 'You are an encouraging Spanish teacher. Ask the student simple questions in English or Spanish. When they answer in Spanish, check their grammar, highlight any mistakes, explain why, and ask a new follow-up question.' }
-    ];
-    const initialAiPrompt = await callOpenAI([...correctorHistory, { role: 'user', content: 'Start the conversation with a simple question in Spanish for a beginner.' }]);
-    if (initialAiPrompt) {
-        appendChatMessage('corrector-chat', 'ai', initialAiPrompt);
-        correctorHistory.push({ role: 'assistant', content: initialAiPrompt });
+        chatHistory.push(`User: ${userMsg}`);
+        const responseText = await callGeminiAPI(systemPrompt, chatHistory.join("\n"));
+
+        if (responseText) {
+            chatHistory.push(`AI: ${responseText}`);
+            
+            const parts = responseText.split("FEEDBACK:");
+            const aiReply = parts[0].trim();
+            const feedback = parts[1] ? parts[1].trim() : null;
+
+            appendMsg('assistant', aiReply);
+            speakText(aiReply);
+
+            if (feedback) {
+                document.getElementById('chatFeedbackText').innerText = feedback;
+                document.getElementById('chatFeedback').style.display = 'block';
+            } else {
+                document.getElementById('chatFeedback').style.display = 'none';
+            }
+        }
     }
-}
 
-async function sendCorrectorResponse() {
-    const input = document.getElementById('corrector-input');
-    const text = input.value.trim();
-    if (!text) return;
-
-    appendChatMessage('corrector-chat', 'user', text);
-    input.value = '';
-
-    correctorHistory.push({ role: 'user', content: text });
-    
-    const feedback = await callOpenAI(correctorHistory);
-    if (feedback) {
-        appendChatMessage('corrector-chat', 'ai', feedback);
-        correctorHistory.push({ role: 'assistant', content: feedback });
+    function appendMsg(role, text) {
+        const win = document.getElementById('chatWindow');
+        const div = document.createElement('div');
+        div.className = `msg ${role}`;
+        div.innerText = text;
+        win.appendChild(div);
+        win.scrollTop = win.scrollHeight;
     }
-}
 
-// --- PRACTICE MODE 2: TALK TO AI AGENT (VOICE) ---
-let agentHistory = [];
-let recognition = null;
-let isRecording = false;
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
 
-async function initAgentMode() {
-    agentHistory = [
-        { role: 'system', content: 'You are a Spanish conversation partner. Speak in clear, simple Spanish. Keep responses under 2-3 sentences. Evaluate the user\'s spoken sentence structure in English briefly if needed.' }
-    ];
-    const greeting = "¡Hola! ¿De qué te gustaría hablar hoy?";
-    appendChatMessage('agent-chat', 'ai', greeting);
-    speakSpanishText(greeting);
-    agentHistory.push({ role: 'assistant', content: greeting });
+    // Web Speech API Voice Recognition
+    let recognition;
+    function toggleVoiceInput() {
+        const micBtn = document.getElementById('micBtn');
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            alert("Speech recognition is not supported in this browser.");
+            return;
+        }
 
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        if (recognition && micBtn.classList.contains('listening')) {
+            recognition.stop();
+            micBtn.classList.remove('listening');
+            return;
+        }
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
         recognition.lang = 'es-ES';
-        recognition.continuous = false;
+        recognition.interimResults = false;
 
-        recognition.onresult = (e) => {
-            const transcript = e.results[0][0].transcript;
-            handleVoiceInput(transcript);
+        recognition.onstart = () => micBtn.classList.add('listening');
+        recognition.onend = () => micBtn.classList.remove('listening');
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            sendChatMessage(transcript);
         };
 
-        recognition.onend = () => {
-            isRecording = false;
-            document.getElementById('mic-btn').classList.remove('recording');
-            document.getElementById('speech-status').innerText = 'Click mic to speak...';
-        };
-    }
-}
-
-function toggleSpeechRecognition() {
-    if (!recognition) {
-        alert("Speech recognition is not supported in this browser. Try Chrome.");
-        return;
-    }
-    if (isRecording) {
-        recognition.stop();
-    } else {
         recognition.start();
-        isRecording = true;
-        document.getElementById('mic-btn').classList.add('recording');
-        document.getElementById('speech-status').innerText = 'Listening... Speak in Spanish now.';
     }
-}
 
-async function handleVoiceInput(text) {
-    appendChatMessage('agent-chat', 'user', text);
-    agentHistory.push({ role: 'user', content: text });
+    // 3. READ WITH AI LOGIC
+    async function generateArticle() {
+        const topic = document.getElementById('readerTopic').value;
+        const systemPrompt = `You are a Spanish educational content creator. Create a short 4-sentence reading passage in Spanish about "${topic}" for beginner students. 
+        Respond ONLY in JSON format with this structure:
+        {
+          "spanish": "Full passage in Spanish",
+          "english": "Full English translation",
+          "vocab": [ {"word": "Spanish word", "translation": "English meaning"} ]
+        }`;
 
-    const response = await callOpenAI(agentHistory);
-    if (response) {
-        appendChatMessage('agent-chat', 'ai', response);
-        speakSpanishText(response);
-        agentHistory.push({ role: 'assistant', content: response });
-    }
-}
+        const rawRes = await callGeminiAPI(systemPrompt, `Generate passage about ${topic}`);
+        if (!rawRes) return;
 
-function speakSpanishText(text) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
-        window.speechSynthesis.speak(utterance);
-    }
-}
-
-// --- PRACTICE MODE 3: READ WITH AI ---
-async function loadNewsArticle() {
-    const prompt = [
-        { role: 'system', content: 'Provide a current short news story (around 100 words) written in Spanish suitable for Level 1/2 students. Return JSON with format: {"es": "spanish text...", "en": "english translation..."}' }
-    ];
-    
-    document.getElementById('reader-es').innerText = "Generating Spanish news article...";
-    document.getElementById('reader-en').innerText = "Translating...";
-
-    const res = await callOpenAI(prompt);
-    if (res) {
         try {
-            const cleanJson = res.replace(/```json/g, '').replace(/```/g, '').trim();
-            const data = JSON.parse(cleanJson);
-            document.getElementById('reader-es').innerText = data.es;
-            document.getElementById('reader-en').innerText = data.en;
-        } catch(e) {
-            document.getElementById('reader-es').innerText = res;
-            document.getElementById('reader-en').innerText = "Translation unavailable.";
+            const cleanJson = rawRes.replace(/```json|```/g, '').trim();
+            const res = JSON.parse(cleanJson);
+
+            document.getElementById('readerSpanishText').innerHTML = `<strong>Spanish:</strong><br>${res.spanish}`;
+            document.getElementById('readerEnglishText').innerHTML = `<strong>English:</strong><br>${res.english}`;
+
+            const tbody = document.querySelector('#vocabTable tbody');
+            tbody.innerHTML = '';
+            res.vocab.forEach(v => {
+                const tr = `<tr><td><strong>${v.word}</strong></td><td>${v.translation}</td></tr>`;
+                tbody.innerHTML += tr;
+            });
+
+            document.getElementById('readerOutput').style.display = 'block';
+        } catch (e) {
+            console.error("Error parsing article JSON", e);
         }
     }
-}
 
-function readArticleOutLoud() {
-    const text = document.getElementById('reader-es').innerText;
-    if (text) speakSpanishText(text);
-}
+    // 4. GRAMMAR PRACTICE LOGIC
+    let currentGrammarAns = "";
+    async function generateGrammarQuestion() {
+        const systemPrompt = `Generate a fill-in-the-blank Spanish practice question testing "por vs para" or article genders. 
+        Respond ONLY with valid JSON:
+        {
+          "question": "Sentence with blank ___",
+          "options": ["option1", "option2"],
+          "answer": "correct option",
+          "explanation": "Why this option is correct"
+        }`;
 
-// --- HELPER FUNCTIONS ---
-function appendChatMessage(containerId, sender, text) {
-    const container = document.getElementById(containerId);
-    const msg = document.createElement('div');
-    msg.className = `message ${sender}`;
-    msg.innerText = text;
-    container.appendChild(msg);
-    container.scrollTop = container.scrollHeight;
-}
+        const rawRes = await callGeminiAPI(systemPrompt, "New grammar question");
+        if (!rawRes) return;
 
-// --- QUIZ LOGIC (UNCHANGED) ---
-function filterQuestions() {
-    const selected = document.getElementById('lesson-select').value;
-    if (selected === 'all') {
-        currentQuestions = [...rawQuestions];
-    } else {
-        const [lvl, lsn] = selected.split('_');
-        currentQuestions = rawQuestions.filter(q => q.level === parseInt(lvl.replace('L','')) && q.lesson === parseInt(lsn));
+        try {
+            const cleanJson = rawRes.replace(/```json|```/g, '').trim();
+            const res = JSON.parse(cleanJson);
+
+            document.getElementById('grammarQuestion').innerText = res.question;
+            const optsContainer = document.getElementById('grammarOptions');
+            optsContainer.innerHTML = '';
+            document.getElementById('grammarResult').innerText = '';
+
+            currentGrammarAns = res.answer;
+            res.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'sub-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === currentGrammarAns) {
+                        document.getElementById('grammarResult').innerText = ` Correct! ${res.explanation}`;
+                        document.getElementById('grammarResult').style.color = "var(--accent-green)";
+                    } else {
+                        document.getElementById('grammarResult').innerText = ` Incorrect. Try again!`;
+                        document.getElementById('grammarResult').style.color = "var(--accent-red)";
+                    }
+                };
+                optsContainer.appendChild(btn);
+            });
+
+            document.getElementById('grammarCard').style.display = 'block';
+        } catch (e) {
+            console.error("Error parsing grammar question JSON", e);
+        }
     }
-    currentQuestions.sort(() => Math.random() - 0.5);
-    restartQuiz();
-}
-
-function restartQuiz() {
-    currentIndex = 0; score = 0; streak = 0;
-    document.getElementById('score-count').textContent = score;
-    document.getElementById('streak-count').textContent = streak;
-    document.getElementById('results-screen').style.display = 'none';
-    document.getElementById('quiz-body').style.display = 'block';
-    showQuestion();
-}
-
-function showQuestion() {
-    const qData = currentQuestions[currentIndex];
-    document.getElementById('lesson-tag').textContent = `Level ${qData.level} - Lesson${qData.lesson}`;
-    document.getElementById('question-text').innerText = qData.prompt;
-    document.getElementById('explanation').style.display = 'none';
-    document.getElementById('next-btn').style.display = 'none';
-    
-    const inputField = document.getElementById('user-answer');
-    const submitBtn = document.getElementById('submit-btn');
-    inputField.value = ''; inputField.disabled = false; inputField.className = 'user-input';
-    submitBtn.style.display = 'block';
-    setTimeout(() => inputField.focus(), 100);
-
-    const progressPct = (currentIndex / currentQuestions.length) * 100;
-    document.getElementById('progress-bar').style.width = `${progressPct}%`;
-}
-
-function normalizeString(str) {
-    return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[¿?¡!.,\/#$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ").trim();
-}
-
-function checkAnswer() {
-    const qData = currentQuestions[currentIndex];
-    const inputField = document.getElementById('user-answer');
-    const submitBtn = document.getElementById('submit-btn');
-    const userVal = normalizeString(inputField.value);
-    
-    if (!userVal) return;
-    inputField.disabled = true; submitBtn.style.display = 'none';
-
-    const isCorrect = qData.answers.some(ans => normalizeString(ans) === userVal);
-    if (isCorrect) {
-        inputField.classList.add('correct'); score++; streak++;
-    } else {
-        inputField.classList.add('incorrect'); streak = 0;
-    }
-
-    document.getElementById('score-count').textContent = score;
-    document.getElementById('streak-count').textContent = streak;
-
-    const expBox = document.getElementById('explanation');
-    expBox.innerHTML = `<div><strong>Target Translation:</strong> ${qData.answers[0]}</div><div style="margin-top:8px;">💡 ${qData.exp}</div>`;
-    expBox.style.display = 'block';
-    document.getElementById('next-btn').style.display = 'block';
-}
-
-function nextQuestion() {
-    currentIndex++;
-    if (currentIndex < currentQuestions.length) showQuestion();
-    else showResults();
-}
-
-function showResults() {
-    document.getElementById('quiz-body').style.display = 'none';
-    document.getElementById('results-screen').style.display = 'block';
-    const finalPct = Math.round((score / currentQuestions.length) * 100);
-    document.getElementById('final-score').textContent = `${finalPct}%`;
-}
-
-// Load API key from cache
-document.getElementById('api-key-input').value = localStorage.getItem('openai_api_key') || '';
-filterQuestions();
 </script>
+
 </body>
 </html>
