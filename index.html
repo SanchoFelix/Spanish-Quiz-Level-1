@@ -1,642 +1,507 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spanish Level 1 & 2 Advanced Challenge Quiz</title>
+    <title>Curso de Español: Interactive AI Lab</title>
     <style>
         :root {
-            --primary: #4A90E2;
-            --primary-dark: #357ABD;
-            --success: #2ECC71;
-            --error: #E74C3C;
-            --background: #F4F7F6;
-            --card: #FFFFFF;
-            --text: #2C3E50;
-            --text-light: #7F8C8D;
-            --border-radius: 12px;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
         }
 
         body {
-            background-color: var(--background);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
+            max-width: 900px;
             width: 100%;
-            max-width: 750px;
-            background: var(--card);
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 25px;
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
-        h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+        .api-key-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
-        .subtitle {
-            color: var(--text-light);
-            font-size: 0.95rem;
+        input[type="password"], input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-top: 5px;
+            font-size: 14px;
         }
 
-        .controls-panel {
+        .sub-nav {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 8px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+        }
+
+        .sub-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .sub-btn.active {
+            background: #eff6ff;
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn:hover { background: var(--primary-dark); }
+        .btn-mic { background: #dc2626; }
+        .btn-mic.listening { animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .feedback-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .metric-card {
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric-val { font-size: 18px; font-weight: bold; color: var(--primary); }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
 
-        select {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 2px solid #E0E0E0;
-            outline: none;
-            font-size: 0.95rem;
-            color: var(--text);
-            background-color: #fff;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
+        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; }
+        .msg.user { background: var(--primary); color: white; align-self: flex-end; }
+        .msg.assistant { background: #e5e7eb; color: var(--text-color); align-self: flex-start; }
 
-        select:focus {
-            border-color: var(--primary);
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .stat-box {
-            background: #F0F4F8;
-            padding: 6px 12px;
-            border-radius: 6px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 10px;
-            background-color: #E0E0E0;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .question-card {
-            margin-bottom: 25px;
-        }
-
-        .question-tag {
-            display: inline-block;
-            background: #EBF3FA;
-            color: var(--primary-dark);
-            font-size: 0.8rem;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .question-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        .input-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .user-input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #EAEAEA;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .user-input:focus {
-            border-color: var(--primary);
-        }
-
-        .user-input.correct {
-            background-color: #E8F8F0;
-            border-color: var(--success);
-            color: #1E7E34;
-            font-weight: 600;
-        }
-
-        .user-input.incorrect {
-            background-color: #FCEAE9;
-            border-color: var(--error);
-            color: #A94442;
-        }
-
-        .submit-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .submit-btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .explanation {
-            margin-top: 15px;
-            padding: 12px 15px;
-            border-radius: 8px;
-            background-color: #F8F9FA;
-            border-left: 4px solid var(--primary);
-            font-size: 0.95rem;
-            display: none;
-        }
-
-        .footer-nav {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
-        .next-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: none;
-        }
-
-        .next-btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .results-screen {
-            text-align: center;
-            padding: 20px 0;
-            display: none;
-        }
-
-        .score-circle {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 20px auto;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
-        }
-
-        .restart-btn {
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .restart-btn:hover {
-            background-color: #27AE60;
-        }
-
-        canvas#confetti {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; }
+        th { background: #f9fafb; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <canvas id="confetti"></canvas>
-    
-    <header>
-        <h1>Curso de Español: Advanced Practice</h1>
-        <p class="subtitle">Fill-in-the-Blank & Sentence Completion Assessment</p>
-    </header>
+    <div class="card api-key-box">
+        <label><strong>Gemini API Key:</strong> (Required for live AI responses)</label>
+        <input type="password" id="apiKeyInput" placeholder="AIzaSy..." onchange="saveApiKey()">
+    </div>
 
-    <div class="controls-panel">
-        <select id="lesson-select" onchange="filterQuestions()">
-            <option value="all">All Lessons (Level 1 & 2)</option>
-            <optgroup label="Level 1">
-                <option value="L1_11">L1 Lesson 11: Big/Small & Knowing</option>
-                <option value="L1_12">L1 Lesson 12: Locations & States</option>
-                <option value="L1_13">L1 Lesson 13: Being, Busy & Tired</option>
-                <option value="L1_14">L1 Lesson 14: Demonstratives & Leaving</option>
-                <option value="L1_15">L1 Lesson 15: Meals & Certainty</option>
-                <option value="L1_16">L1 Lesson 16: Having, Doing & Items</option>
-                <option value="L1_17">L1 Lesson 17: Verbs & Subject Pronouns</option>
-                <option value="L1_18">L1 Lesson 18: Conjugations & Need</option>
-                <option value="L1_19">L1 Lesson 19: Present Tense & Ser/Estar</option>
-                <option value="L1_20">L1 Lesson 20: Nationalities & Object Pronouns</option>
-            </optgroup>
-            <optgroup label="Level 2">
-                <option value="L2_12">L2 Lesson 12: Commands & Adverbs</option>
-                <option value="L2_13">L2 Lesson 13: Days & Well/Very Well</option>
-                <option value="L2_14">L2 Lesson 14: Demonstratives & Nouns</option>
-                <option value="L2_15">L2 Lesson 15: "We" Forms & Prepositions</option>
-                <option value="L2_16">L2 Lesson 16: Numbers, Rooms & Greetings</option>
-                <option value="L2_17">L2 Lesson 17: Giving & Indirect Pronouns</option>
-                <option value="L2_18">L2 Lesson 18: Formal Address & Thinking/Starting</option>
-                <option value="L2_19">L2 Lesson 19: Liking & Types</option>
-                <option value="L2_20">L2 Lesson 20: Ability, Returning & Reflexives</option>
-            </optgroup>
-        </select>
+    <div class="card">
+        <h2 style="text-align: center; color: var(--primary); margin-top: 0;">AI Spanish Learning Lab</h2>
+        <p style="text-align: center; color: #6b7280; font-size: 14px;">Interactive Sentence Correction, Voice Chat, Article Reader & Rules Practice</p>
 
-        <div class="stats">
-            <div class="stat-box">Streak: 🔥 <span id="streak-count">0</span></div>
-            <div class="stat-box">Score: ⭐ <span id="score-count">0</span></div>
+        <div class="sub-nav">
+            <button class="sub-btn active" onclick="switchLab('corrector', event)">1. Sentence Corrector</button>
+            <button class="sub-btn" onclick="switchLab('chat', event)">2. Talk to AI Agent</button>
+            <button class="sub-btn" onclick="switchLab('reader', event)">3. Read with AI</button>
+            <button class="sub-btn" onclick="switchLab('grammar', event)">4. Grammar Practice</button>
         </div>
-    </div>
 
-    <div class="progress-bar-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
+        <!-- 1. SENTENCE CORRECTOR MODULE -->
+        <div id="lab-corrector" class="tab-content active">
+            <p>Type a sentence in Spanish below. The AI will correct your sentence, evaluate your level, and suggest better alternatives.</p>
+            <textarea id="correctorInput" rows="3" placeholder="e.g., Yo tengo un perro bonito y me gusta caminar con él."></textarea>
+            <button class="btn" onclick="runSentenceCorrector()">Analyze Sentence</button>
 
-    <div id="quiz-body">
-        <div class="question-card">
-            <span class="question-tag" id="lesson-tag">Level 1 - Lesson 11</span>
-            <div class="question-text" id="question-text">Loading question...</div>
-            
-            <div class="input-container">
-                <input type="text" id="user-answer" class="user-input" placeholder="Type your Spanish answer here..." autocomplete="off">
-                <button id="submit-btn" class="submit-btn" onclick="checkAnswer()">Submit Answer</button>
+            <div id="correctorOutput" style="display:none;" class="feedback-box">
+                <h4>Analysis & Corrections:</h4>
+                <p><strong>Original:</strong> <span id="corrOrig"></span></p>
+                <p><strong>Correction:</strong> <span id="corrFixed" style="color: var(--accent-green); font-weight: bold;"></span></p>
+                <p><strong>English Translation:</strong> <span id="corrTrans"></span></p>
+                <p><strong>Grammar Explanation:</strong> <span id="corrNotes"></span></p>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card"><div>Grammar</div><div class="metric-val" id="scoreGrammar">-</div></div>
+                    <div class="metric-card"><div>Vocabulary</div><div class="metric-val" id="scoreVocab">-</div></div>
+                    <div class="metric-card"><div>Complexity</div><div class="metric-val" id="scoreComplexity">-</div></div>
+                </div>
             </div>
-
-            <div class="explanation" id="explanation"></div>
         </div>
 
-        <div class="footer-nav">
-            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question ➔</button>
+        <!-- 2. AI VOICE & TEXT CHAT MODULE -->
+        <div id="lab-chat" class="tab-content">
+            <div class="chat-box" id="chatWindow">
+                <div class="msg assistant">¡Hola! ¿De qué te gustaría hablar hoy?</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="chatInput" placeholder="Type your response in Spanish..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button class="btn" onclick="sendChatMessage()">Send</button>
+                <button class="btn btn-mic" id="micBtn" onclick="toggleVoiceInput()">🎤 Speak</button>
+            </div>
+            <div id="chatFeedback" class="feedback-box" style="display:none; margin-top: 10px;">
+                <strong>Real-time Grammar Feedback:</strong>
+                <div id="chatFeedbackText"></div>
+            </div>
         </div>
-    </div>
 
-    <div class="results-screen" id="results-screen">
-        <h2>Assessment Completed! 🎉</h2>
-        <p>Your Final Result:</p>
-        <div class="score-circle" id="final-score">0%</div>
-        <p id="results-feedback">Great effort! Keep practicing.</p>
-        <button class="restart-btn" onclick="restartQuiz()">Try Again 🔄</button>
+        <!-- 3. READ WITH AI MODULE -->
+        <div id="lab-reader" class="tab-content">
+            <p>Generate a customized Spanish reading story tailored to your current learning level.</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <select id="readerTopic">
+                    <option value="daily routine">Daily Routine</option>
+                    <option value="travel and airport">Travel & Airport</option>
+                    <option value="ordering food at a restaurant">Ordering Food</option>
+                </select>
+                <button class="btn" onclick="generateArticle()">Generate Story</button>
+            </div>
+            <div id="readerOutput" style="display:none;">
+                <div class="card" style="background: #f8fafc;" id="readerSpanishText"></div>
+                <div class="card" style="background: #f1f5f9;" id="readerEnglishText"></div>
+                <h4>Key Vocabulary Breakdown:</h4>
+                <table id="vocabTable">
+                    <thead><tr><th>Spanish Word</th><th>English Translation</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. TARGETED GRAMMAR PRACTICE MODULE -->
+        <div id="lab-grammar" class="tab-content">
+            <h3>Targeted Rules Practice</h3>
+            <p>Practice common tricky areas like <strong>Por vs. Para</strong> or gendered articles.</p>
+            <button class="btn" onclick="generateGrammarQuestion()">Get New Exercise</button>
+            <div id="grammarCard" class="feedback-box" style="display:none; margin-top: 15px;">
+                <p id="grammarQuestion" style="font-size: 16px; font-weight: bold;"></p>
+                <div id="grammarOptions" style="display: flex; gap: 10px; margin-top: 10px;"></div>
+                <p id="grammarResult" style="margin-top: 10px; font-weight: bold;"></p>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script>
-// ADVANCED FILL-IN-THE-BLANK / COMPLETE THE SENTENCE QUESTION BANK
-// Array of valid answers accepts common variations and regional terms (e.g., ordenador / computadora)
-const rawQuestions = [
-    // LEVEL 1 - LESSON 11
-    { level: 1, lesson: 11, q: "Fill in the blank: Fill in the missing Spanish word for 'the big one' (masculine):\n'¿Quieres el pequeño o _____ grande?'", answers: ["el"], exp: "Use 'el' for 'the big one' (masculine) -> el grande." },
-    { level: 1, lesson: 11, q: "Complete the sentence (Translate 'why I don't have it'):\n¿Sabes _____ _____ _____ _____?", answers: ["por que no lo tengo", "porque no lo tengo"], exp: "'Por qué no lo tengo' = why I don't have it." },
-    { level: 1, lesson: 11, q: "Fill in the blank (Translate 'I know that I can do it'):\n'_____ que puedo hacerlo.'", answers: ["se", "sé"], exp: "'Sé' is 1st person singular of saber." },
-
-    // LEVEL 1 - LESSON 12
-    { level: 1, lesson: 12, q: "Complete the sentence (Translate 'Where are you?'):\n¿Dónde _____?", answers: ["estas", "estás"], exp: "'Estás' is used for asking location of 'tú'." },
-    { level: 1, lesson: 12, q: "Fill in the blank (Translate 'here' and 'there'):\n'Está _____ (here), no está _____ (there).'", answers: ["aqui alli", "aquí allí", "aqui, alli", "aquí, allí"], exp: "'Aquí' means here, 'allí' means there." },
-
-    // LEVEL 1 - LESSON 13
-    { level: 1, lesson: 13, q: "Complete the sentence (Translate 'I am busy' - female speaker):\n'Estoy _____.'", answers: ["ocupada"], exp: "Female speaker uses feminine adjective ending (-a): ocupada." },
-    { level: 1, lesson: 13, q: "Fill in the blank (Translate 'tired today' - female speaker):\n'Estoy _____ hoy.'", answers: ["cansada"], exp: "Feminine form of tired is 'cansada'." },
-
-    // LEVEL 1 - LESSON 14
-    { level: 1, lesson: 14, q: "Fill in the blank (Translate neutral 'this' and 'that'):\n'¿Qué es _____ (this)? ¿Qué es _____ (that)?'", answers: ["esto eso", "esto, eso", "esto y eso"], exp: "Neutral demonstratives: esto (this), eso (that)." },
-    { level: 1, lesson: 14, q: "Complete the sentence (Translate 'I have to leave'):\n'_____ que salir.'", answers: ["tengo"], exp: "'Tengo que salir' = I have to leave." },
-
-    // LEVEL 1 - LESSON 15
-    { level: 1, lesson: 15, q: "Fill in the blank (Translate 'to have dinner' and 'to have lunch/eat'):\n'Quiero _____ (have dinner) y luego _____ (eat/lunch).'", answers: ["cenar comer", "cenar, comer", "cenar y comer"], exp: "'Cenar' = to have dinner; 'Comer' = to eat / have lunch." },
-    { level: 1, lesson: 15, q: "Complete the sentence (Translate 'Are you sure that it's possible?' - masculine listener):\n¿Estás _____ que es posible?", answers: ["seguro"], exp: "Masculine form: seguro." },
-
-    // LEVEL 1 - LESSON 16
-    { level: 1, lesson: 16, q: "Complete the sentence (Translate 'I do / I am doing it today'):\n'Lo _____ hoy.'", answers: ["hago"], exp: "1st person present form of hacer is 'hago'." },
-    { level: 1, lesson: 16, q: "Fill in the blank (Translate 'The computer is on the table'):\n'El ordenador / la computadora está _____ la mesa.'", answers: ["en"], exp: "'En' translates to 'on' or 'in'." },
-
-    // LEVEL 1 - LESSON 17
-    { level: 1, lesson: 17, q: "Complete the sentence (Translate 'He knows why'):\n'Él _____ por qué.'", answers: ["sabe"], exp: "3rd person singular present of saber is 'sabe'." },
-    { level: 1, lesson: 17, q: "Fill in the blank (Translate 'Where does he have dinner?'):\n'¿Dónde _____?'", answers: ["cena"], exp: "Present conjugation for he/she/usted: cena." },
-
-    // LEVEL 1 - LESSON 18
-    { level: 1, lesson: 18, q: "Fill in the blank (Translate 'I leave' and 'you leave'):\n'Yo _____ (leave), tú _____ (leave).'", answers: ["salgo sales", "salgo, sales", "salgo y sales"], exp: "Conjugation of salir: salgo, sales." },
-    { level: 1, lesson: 18, q: "Complete the sentence (Translate 'She needs to do it'):\n'_____ hacerlo.'", answers: ["necesita", "ella necesita"], exp: "'Necesita' translates to she/he needs." },
-
-    // LEVEL 1 - LESSON 19
-    { level: 1, lesson: 19, q: "Fill in the blank (Translate 'I see' and 'you see'):\n'Yo _____ (see), tú _____ (see).'", answers: ["veo ves", "veo, ves", "veo y ves"], exp: "Conjugation of ver: veo, ves." },
-
-    // LEVEL 1 - LESSON 20
-    { level: 1, lesson: 20, q: "Complete the sentence (Translate 'I am British' - male/female speaker):\n'_____ británico/a.'", answers: ["soy"], exp: "Use 'Soy' for nationality." },
-    { level: 1, lesson: 20, q: "Fill in the blank (Translate 'Can you see me?' and 'I can see you'):\n'¿Puedes ver_____? Puedo ver_____.'", answers: ["me te", "me, te", "me / te"], exp: "Object pronouns attached to infinitives: verme, verte." },
-
-    // LEVEL 2 - LESSON 12
-    { level: 2, lesson: 12, q: "Complete the command (Translate 'Call me!'):\n'¡Lláma_____!'", answers: ["me", "llámame"], exp: "Informal imperative of llamar + me = ¡Llámame!" },
-    { level: 2, lesson: 12, q: "Complete the command (Translate 'Buy it!' - masculine object):\n'¡Cómpra_____!'", answers: ["lo", "cómpralo"], exp: "Imperative comprar + lo = ¡Cómpralo!" },
-
-    // LEVEL 2 - LESSON 13
-    { level: 2, lesson: 13, q: "Fill in the blank (Translate 'well' and 'very well'):\n'Habla _____ (well), habla _____ _____ (very well).'", answers: ["bien muy bien", "bien, muy bien"], exp: "'Bien' = well, 'muy bien' = very well." },
-    { level: 2, lesson: 13, q: "Fill in the blank with the Spanish day of the week:\n'Monday = el _____ , Wednesday = el _____.'", answers: ["lunes miercoles", "lunes miércoles", "lunes, miercoles", "lunes, miércoles"], exp: "Monday = lunes, Wednesday = miércoles." },
-
-    // LEVEL 2 - LESSON 14
-    { level: 2, lesson: 14, q: "Fill in the blank (Translate 'this book' and 'that table'):\n'_____ libro (this), _____ mesa (that).'", answers: ["este esa", "este, esa"], exp: "Demonstrative adjectives: este (m. this), esa (f. that)." },
-    { level: 2, lesson: 14, q: "Complete the sentence (Translate 'a man and a woman'):\n'Un _____ y una _____.'", answers: ["hombre mujer", "hombre, mujer", "hombre y una mujer"], exp: "'Hombre' = man, 'mujer' = woman." },
-
-    // LEVEL 2 - LESSON 15
-    { level: 2, lesson: 15, q: "Complete the sentence (Translate 'We speak'):\n'Nosotros _____.'", answers: ["hablamos"], exp: "The -ar verb ending for 'nosotros' is -amos." },
-    { level: 2, lesson: 15, q: "Complete the sentence (Translate 'We go out / leave'):\n'Nosotros _____.'", answers: ["salimos"], exp: "The -ir verb ending for 'nosotros' is -imos: salimos." },
-
-    // LEVEL 2 - LESSON 16
-    { level: 2, lesson: 16, q: "Complete the sentence (Translate 'It is too expensive / too much'):\n'Es _____ caro.'", answers: ["demasiado"], exp: "'Demasiado' means too or too much." },
-    { level: 2, lesson: 16, q: "Fill in the blank (Count 1 to 3 in Spanish):\n'_____, dos, _____.'", answers: ["uno tres", "uno, tres"], exp: "1 = uno, 3 = tres." },
-
-    // LEVEL 2 - LESSON 17
-    { level: 2, lesson: 17, q: "Complete the command (Translate 'Give me!'):\n'¡Da_____!'", answers: ["me", "dame"], exp: "Imperative form of dar + me = ¡Dame!" },
-    { level: 2, lesson: 17, q: "Fill in the blank (Translate 'You give me' vs 'I give you'):\n'Me _____ (you give me), te _____ (I give you).'", answers: ["das doy", "das, doy"], exp: "Conjugations of dar: (tú) das, (yo) doy." },
-
-    // LEVEL 2 - LESSON 18
-    { level: 2, lesson: 18, q: "Complete the sentence (Translate 'How are you?' formally using usted):\n¿Cómo _____ usted?", answers: ["esta", "está"], exp: "Use 3rd person singular for formal address: está." },
-    { level: 2, lesson: 18, q: "Complete the sentence (Translate 'I start / begin'):\n'Yo _____.'", answers: ["empiezo"], exp: "Stem-changing verb: empezar -> empiezo." },
-
-    // LEVEL 2 - LESSON 19
-    { level: 2, lesson: 19, q: "Complete the question (Translate 'What kind of...'):\n¿_____ tipo de...?", answers: ["que", "qué"], exp: "'¿Qué tipo de...?' = What kind of..." },
-    { level: 2, lesson: 19, q: "Fill in the blank (Translate 'I like' vs 'I would like'):\n'Me _____ (I like), me _____ (I would like).'", answers: ["gusta gustaria", "gusta gustaría", "gusta, gustaria", "gusta, gustaría"], exp: "'Me gusta' = I like; 'Me gustaría' = I would like." },
-
-    // LEVEL 2 - LESSON 20
-    { level: 2, lesson: 20, q: "Complete the sentence (Translate 'I can / am able'):\n'Yo _____ hacerlo.'", answers: ["puedo"], exp: "Stem-changing verb: poder -> puedo." },
-    { level: 2, lesson: 20, q: "Complete the sentence (Translate 'I am getting up'):\n'_____ levanto.'", answers: ["me"], exp: "Reflexive pronoun for 'yo': me levanto." }
-];
-
-// STATE MANAGEMENT
-let currentQuestions = [];
-let currentIndex = 0;
-let score = 0;
-let streak = 0;
-
-// WEB AUDIO SYNTHESIZER
-let audioCtx = null;
-
-function getAudioContext() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function saveApiKey() {
+        localStorage.setItem('gemini_api_key', document.getElementById('apiKeyInput').value.trim());
     }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
+    function getApiKey() {
+        return localStorage.getItem('gemini_api_key') || document.getElementById('apiKeyInput').value.trim();
     }
-    return audioCtx;
-}
-
-function playSound(type) {
-    try {
-        const ctx = getAudioContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        if (type === 'correct') {
-            osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-            osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.3);
-        } else {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(220, ctx.currentTime);
-            osc.frequency.setValueAtTime(174.61, ctx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.3);
-        }
-    } catch(e) {}
-}
-
-// INITIALIZATION & FILTERING
-function filterQuestions() {
-    const selected = document.getElementById('lesson-select').value;
-    if (selected === 'all') {
-        currentQuestions = [...rawQuestions];
-    } else {
-        const [lvl, lsn] = selected.split('_');
-        currentQuestions = rawQuestions.filter(q => q.level === parseInt(lvl.replace('L','')) && q.lesson === parseInt(lsn));
-    }
-    
-    currentQuestions.sort(() => Math.random() - 0.5);
-    restartQuiz();
-}
-
-function restartQuiz() {
-    currentIndex = 0;
-    score = 0;
-    streak = 0;
-    document.getElementById('score-count').textContent = score;
-    document.getElementById('streak-count').textContent = streak;
-    document.getElementById('results-screen').style.display = 'none';
-    document.getElementById('quiz-body').style.display = 'block';
-    showQuestion();
-}
-
-function showQuestion() {
-    const qData = currentQuestions[currentIndex];
-    
-    document.getElementById('lesson-tag').textContent = `Level ${qData.level} - Lesson${qData.lesson}`;
-    document.getElementById('question-text').innerText = qData.q;
-    document.getElementById('explanation').style.display = 'none';
-    document.getElementById('next-btn').style.display = 'none';
-    
-    const inputField = document.getElementById('user-answer');
-    const submitBtn = document.getElementById('submit-btn');
-    inputField.value = '';
-    inputField.disabled = false;
-    inputField.className = 'user-input';
-    submitBtn.disabled = false;
-    submitBtn.style.display = 'block';
-
-    // Focus input field automatically
-    setTimeout(() => inputField.focus(), 100);
-
-    // Keypress handler for enter key
-    inputField.onkeyup = function(e) {
-        if (e.key === 'Enter') checkAnswer();
+    window.onload = () => {
+        const key = getApiKey();
+        if (key) document.getElementById('apiKeyInput').value = key;
     };
-    
-    const progressPct = (currentIndex / currentQuestions.length) * 100;
-    document.getElementById('progress-bar').style.width = `${progressPct}%`;
-}
 
-// STRING NORMALIZATION UTILITY (Ignores punctuation, accents, and case for friendly matching)
-function normalizeString(str) {
-    return str
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
-        .replace(/[¿?¡!.,\/#$%\^&\*;:{}=\-_`~()]/g, "") // remove punctuation
-        .replace(/\s+/g, " ") // simplify whitespace
-        .trim();
-}
-
-function checkAnswer() {
-    const qData = currentQuestions[currentIndex];
-    const inputField = document.getElementById('user-answer');
-    const submitBtn = document.getElementById('submit-btn');
-    const userVal = normalizeString(inputField.value);
-    
-    if (!userVal) return; // Ignore blank submissions
-
-    inputField.disabled = true;
-    submitBtn.style.display = 'none';
-
-    // Check if normalized user input matches any acceptable normalized answer
-    const isCorrect = qData.answers.some(ans => normalizeString(ans) === userVal);
-
-    if (isCorrect) {
-        inputField.classList.add('correct');
-        score++;
-        streak++;
-        playSound('correct');
-    } else {
-        inputField.classList.add('incorrect');
-        streak = 0;
-        playSound('error');
+    function switchLab(tabName, evt) {
+        document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        if (evt && evt.target) evt.target.classList.add('active');
+        document.getElementById(`lab-${tabName}`).classList.add('active');
     }
 
-    document.getElementById('score-count').textContent = score;
-    document.getElementById('streak-count').textContent = streak;
+    async function callGeminiAPI(systemInstruction, userPrompt) {
+        const apiKey = getApiKey();
+        if (!apiKey) {
+            alert("Please enter your Gemini API key in the field above.");
+            return null;
+        }
 
-    const expBox = document.getElementById('explanation');
-    expBox.innerHTML = `<strong>Accepted Answer:</strong> ${qData.answers[0]}<br>💡 ${qData.exp}`;
-    expBox.style.display = 'block';
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+            systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
+        };
 
-    document.getElementById('next-btn').style.display = 'block';
-}
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-function nextQuestion() {
-    currentIndex++;
-    if (currentIndex < currentQuestions.length) {
-        showQuestion();
-    } else {
-        showResults();
-    }
-}
+                const data = await response.json();
 
-function showResults() {
-    document.getElementById('quiz-body').style.display = 'none';
-    document.getElementById('progress-bar').style.width = '100%';
-    
-    const resultsScreen = document.getElementById('results-screen');
-    const finalPct = Math.round((score / currentQuestions.length) * 100);
-    
-    document.getElementById('final-score').textContent = `${finalPct}%`;
-    
-    let feedback = "";
-    if (finalPct === 100) feedback = "¡Increíble! Perfect score on advanced recall! 🌟";
-    else if (finalPct >= 80) feedback = "¡Excelente! Superior active grammar memory! 👏";
-    else if (finalPct >= 60) feedback = "Good effort! Practice spelling and conjugations again. 👍";
-    else feedback = "Keep practicing! Active recall builds true fluency. 📚";
-    
-    document.getElementById('results-feedback').textContent = feedback;
-    resultsScreen.style.display = 'block';
+                if (response.status === 503 || response.status === 429) {
+                    console.warn(`Server busy (${response.status}). Retrying...`);
+                    await new Promise(resolve => setTimeout(resolve, attempt * 1500));
+                    continue;
+                }
 
-    if (finalPct >= 80) {
-        triggerConfetti();
-    }
-}
+                if (!response.ok) {
+                    console.error("Gemini API Error:", data);
+                    return null;
+                }
 
-function triggerConfetti() {
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.parentElement.clientWidth;
-    canvas.height = canvas.parentElement.clientHeight;
-
-    const pieces = [];
-    const colors = ['#4A90E2', '#2ECC71', '#E74C3C', '#F1C40F', '#9B59B6'];
-
-    for (let i = 0; i < 80; i++) {
-        pieces.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            size: Math.random() * 8 + 4,
-            speed: Math.random() * 3 + 2
-        });
+                return data.candidates[0]?.content?.parts[0]?.text || null;
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        }
+        return null;
     }
 
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach(p => {
-            p.y += p.speed;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-        });
+    // 1. SENTENCE CORRECTOR LOGIC
+    async function runSentenceCorrector() {
+        const text = document.getElementById('correctorInput').value.trim();
+        if (!text) return;
 
-        if (pieces.some(p => p.y < canvas.height)) {
-            requestAnimationFrame(animate);
+        const systemPrompt = `You are an expert Spanish teacher. Analyze the provided Spanish sentence and respond ONLY with valid JSON in this exact structure:
+        {
+          "correction": "corrected sentence",
+          "translation": "English translation",
+          "explanation": "concise grammar explanation",
+          "grammar_score": "A1/A2/B1/B2",
+          "vocab_score": "Basic/Intermediate/Advanced",
+          "complexity": "Low/Medium/High"
+        }`;
+
+        const rawRes = await callGeminiAPI(systemPrompt, text);
+        if (!rawRes) return;
+
+        try {
+            const cleanJson = rawRes.replace(/```json|```/g, '').trim();
+            const res = JSON.parse(cleanJson);
+
+            document.getElementById('corrOrig').innerText = text;
+            document.getElementById('corrFixed').innerText = res.correction;
+            document.getElementById('corrTrans').innerText = res.translation;
+            document.getElementById('corrNotes').innerText = res.explanation;
+            document.getElementById('scoreGrammar').innerText = res.grammar_score;
+            document.getElementById('scoreVocab').innerText = res.vocab_score;
+            document.getElementById('scoreComplexity').innerText = res.complexity;
+            
+            document.getElementById('correctorOutput').style.display = 'block';
+        } catch (e) {
+            console.error("Failed to parse JSON response", e);
         }
     }
-    animate();
-}
 
-// Start Quiz on load
-filterQuestions();
+    // 2. CHAT & VOICE LOGIC
+    let chatHistory = [];
+    async function sendChatMessage(customText = null) {
+        const inputField = document.getElementById('chatInput');
+        const userMsg = customText || inputField.value.trim();
+        if (!userMsg) return;
+
+        appendMsg('user', userMsg);
+        if (!customText) inputField.value = '';
+
+        const systemPrompt = `You are a supportive Spanish conversational agent for a beginner learner. 
+        Respond in conversational Spanish (keep it clear and beginner-friendly). 
+        At the end of your response, if the user made any grammatical errors, add a separate section starting with "FEEDBACK:" explaining the fix in English.`;
+
+        chatHistory.push(`User: ${userMsg}`);
+        const responseText = await callGeminiAPI(systemPrompt, chatHistory.join("\n"));
+
+        if (responseText) {
+            chatHistory.push(`AI: ${responseText}`);
+            
+            const parts = responseText.split("FEEDBACK:");
+            const aiReply = parts[0].trim();
+            const feedback = parts[1] ? parts[1].trim() : null;
+
+            appendMsg('assistant', aiReply);
+            speakText(aiReply);
+
+            if (feedback) {
+                document.getElementById('chatFeedbackText').innerText = feedback;
+                document.getElementById('chatFeedback').style.display = 'block';
+            } else {
+                document.getElementById('chatFeedback').style.display = 'none';
+            }
+        }
+    }
+
+    function appendMsg(role, text) {
+        const win = document.getElementById('chatWindow');
+        const div = document.createElement('div');
+        div.className = `msg ${role}`;
+        div.innerText = text;
+        win.appendChild(div);
+        win.scrollTop = win.scrollHeight;
+    }
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    let recognition;
+    function toggleVoiceInput() {
+        const micBtn = document.getElementById('micBtn');
+        if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+            alert("Speech recognition is not supported in this browser.");
+            return;
+        }
+
+        if (recognition && micBtn.classList.contains('listening')) {
+            recognition.stop();
+            micBtn.classList.remove('listening');
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.interimResults = false;
+
+        recognition.onstart = () => micBtn.classList.add('listening');
+        recognition.onend = () => micBtn.classList.remove('listening');
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            sendChatMessage(transcript);
+        };
+
+        recognition.start();
+    }
+
+    // 3. READ WITH AI LOGIC
+    async function generateArticle() {
+        const topic = document.getElementById('readerTopic').value;
+        const systemPrompt = `You are a Spanish educational content creator. Create a short 4-sentence reading passage in Spanish about "${topic}" for beginner students. 
+        Respond ONLY in JSON format with this structure:
+        {
+          "spanish": "Full passage in Spanish",
+          "english": "Full English translation",
+          "vocab": [ {"word": "Spanish word", "translation": "English meaning"} ]
+        }`;
+
+        const rawRes = await callGeminiAPI(systemPrompt, `Generate passage about ${topic}`);
+        if (!rawRes) return;
+
+        try {
+            const cleanJson = rawRes.replace(/```json|```/g, '').trim();
+            const res = JSON.parse(cleanJson);
+
+            document.getElementById('readerSpanishText').innerHTML = `<strong>Spanish:</strong><br>${res.spanish}`;
+            document.getElementById('readerEnglishText').innerHTML = `<strong>English:</strong><br>${res.english}`;
+
+            const tbody = document.querySelector('#vocabTable tbody');
+            tbody.innerHTML = '';
+            res.vocab.forEach(v => {
+                const tr = `<tr><td><strong>${v.word}</strong></td><td>${v.translation}</td></tr>`;
+                tbody.innerHTML += tr;
+            });
+
+            document.getElementById('readerOutput').style.display = 'block';
+        } catch (e) {
+            console.error("Error parsing article JSON", e);
+        }
+    }
+
+    // 4. GRAMMAR PRACTICE LOGIC
+    let currentGrammarAns = "";
+    async function generateGrammarQuestion() {
+        const systemPrompt = `Generate a fill-in-the-blank Spanish practice question testing "por vs para" or article genders. 
+        Respond ONLY with valid JSON:
+        {
+          "question": "Sentence with blank ___",
+          "options": ["option1", "option2"],
+          "answer": "correct option",
+          "explanation": "Why this option is correct"
+        }`;
+
+        const rawRes = await callGeminiAPI(systemPrompt, "New grammar question");
+        if (!rawRes) return;
+
+        try {
+            const cleanJson = rawRes.replace(/```json|```/g, '').trim();
+            const res = JSON.parse(cleanJson);
+
+            document.getElementById('grammarQuestion').innerText = res.question;
+            const optsContainer = document.getElementById('grammarOptions');
+            optsContainer.innerHTML = '';
+            document.getElementById('grammarResult').innerText = '';
+
+            currentGrammarAns = res.answer;
+            res.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'sub-btn';
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    if (opt === currentGrammarAns) {
+                        document.getElementById('grammarResult').innerText = ` Correct! ${res.explanation}`;
+                        document.getElementById('grammarResult').style.color = "var(--accent-green)";
+                    } else {
+                        document.getElementById('grammarResult').innerText = ` Incorrect. Try again!`;
+                        document.getElementById('grammarResult').style.color = "var(--accent-red)";
+                    }
+                };
+                optsContainer.appendChild(btn);
+            });
+
+            document.getElementById('grammarCard').style.display = 'block';
+        } catch (e) {
+            console.error("Error parsing grammar question JSON", e);
+        }
+    }
 </script>
+
 </body>
 </html>
