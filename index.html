@@ -46,7 +46,7 @@
             margin-bottom: 20px;
         }
 
-        input[type="password"], input[type="text"], textarea {
+        input[type="password"], input[type="text"], textarea, select {
             width: 100%;
             padding: 10px;
             border: 1px solid #d1d5db;
@@ -70,6 +70,7 @@
             background: white;
             cursor: pointer;
             font-size: 14px;
+            transition: all 0.2s ease;
         }
 
         .sub-btn.active {
@@ -91,6 +92,7 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
+            transition: background 0.2s ease;
         }
 
         .btn:hover { background: var(--primary-dark); }
@@ -139,7 +141,7 @@
             gap: 10px;
         }
 
-        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; }
+        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; line-height: 1.4; }
         .msg.user { background: var(--primary); color: white; align-self: flex-end; }
         .msg.assistant { background: #e5e7eb; color: var(--text-color); align-self: flex-start; }
 
@@ -151,15 +153,18 @@
 <body>
 
 <div class="container">
+    <!-- API KEY CONTAINER -->
     <div class="card api-key-box">
         <label><strong>Gemini API Key:</strong> (Required for live AI responses)</label>
         <input type="password" id="apiKeyInput" placeholder="AIzaSy..." onchange="saveApiKey()">
     </div>
 
+    <!-- MAIN LAB CARD -->
     <div class="card">
         <h2 style="text-align: center; color: var(--primary); margin-top: 0;">AI Spanish Learning Lab</h2>
         <p style="text-align: center; color: #6b7280; font-size: 14px;">Interactive Sentence Correction, Voice Chat, Article Reader & Rules Practice</p>
 
+        <!-- SUB-NAVIGATION TABS -->
         <div class="sub-nav">
             <button class="sub-btn active" onclick="switchLab('corrector', event)">1. Sentence Corrector</button>
             <button class="sub-btn" onclick="switchLab('chat', event)">2. Talk to AI Agent</button>
@@ -194,7 +199,7 @@
                 <div class="msg assistant">¡Hola! ¿De qué te gustaría hablar hoy?</div>
             </div>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="chatInput" placeholder="Type your response in Spanish..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <input type="text" id="chatInput" placeholder="Type your response in Spanish..." onkeydown="if(event.key==='Enter') sendChatMessage()">
                 <button class="btn" onclick="sendChatMessage()">Send</button>
                 <button class="btn btn-mic" id="micBtn" onclick="toggleVoiceInput()">🎤 Speak</button>
             </div>
@@ -212,11 +217,13 @@
                     <option value="daily routine">Daily Routine</option>
                     <option value="travel and airport">Travel & Airport</option>
                     <option value="ordering food at a restaurant">Ordering Food</option>
+                    <option value="hobbies and leisure">Hobbies & Leisure</option>
                 </select>
                 <button class="btn" onclick="generateArticle()">Generate Story</button>
             </div>
             <div id="readerOutput" style="display:none;">
                 <div class="card" style="background: #f8fafc;" id="readerSpanishText"></div>
+                <button class="btn" style="background: #10b981; margin-bottom: 15px;" onclick="readCurrentArticleOutLoud()">🔊 Listen to Spanish Passage</button>
                 <div class="card" style="background: #f1f5f9;" id="readerEnglishText"></div>
                 <h4>Key Vocabulary Breakdown:</h4>
                 <table id="vocabTable">
@@ -386,6 +393,7 @@
 
     function speakText(text) {
         if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Cancel ongoing audio
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'es-ES';
             window.speechSynthesis.speak(utterance);
@@ -422,6 +430,7 @@
     }
 
     // 3. READ WITH AI LOGIC
+    let currentRawSpanishText = "";
     async function generateArticle() {
         const topic = document.getElementById('readerTopic').value;
         const systemPrompt = `You are a Spanish educational content creator. Create a short 4-sentence reading passage in Spanish about "${topic}" for beginner students. 
@@ -439,6 +448,7 @@
             const cleanJson = rawRes.replace(/```json|```/g, '').trim();
             const res = JSON.parse(cleanJson);
 
+            currentRawSpanishText = res.spanish;
             document.getElementById('readerSpanishText').innerHTML = `<strong>Spanish:</strong><br>${res.spanish}`;
             document.getElementById('readerEnglishText').innerHTML = `<strong>English:</strong><br>${res.english}`;
 
@@ -452,6 +462,12 @@
             document.getElementById('readerOutput').style.display = 'block';
         } catch (e) {
             console.error("Error parsing article JSON", e);
+        }
+    }
+
+    function readCurrentArticleOutLoud() {
+        if (currentRawSpanishText) {
+            speakText(currentRawSpanishText);
         }
     }
 
